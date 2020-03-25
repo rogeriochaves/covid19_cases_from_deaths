@@ -1,6 +1,9 @@
 
 Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS = "true")
 
+install.packages('remotes')
+install.packages("rmarkdown")
+
 ## projections package
 missing_devel_projections <-
   !("projections" %in% installed.packages()[, "Package"]) ||

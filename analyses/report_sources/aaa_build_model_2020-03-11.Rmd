@@ -51,12 +51,15 @@ used in the analyses, etc.
 ```{r libraries}
 
 library(here)
-library(reportfactory)
 library(incidence)
 library(distcrete)
 library(epitrix)
 library(tidyverse)
 library(projections)
+
+source("../../app/scripts/custom_graphics.R")
+source("../../app/scripts/merge_add_projections.R")
+source("../../app/scripts/merge_projections.R")
 
 ```
 
@@ -69,11 +72,6 @@ These scripts will load:
 * all local scripts, stored as `.R` filesinside `/scripts/`
 * all global scripts, i.e. stored outside the factory in `../scripts/`
 
-```{r read_scripts}
-
-rfh_load_scripts()
-
-```
 
 
 
@@ -284,24 +282,20 @@ proj
 plot(sim_i) %>%
   add_projections(proj) +
   theme_bw() +
-  large_txt +
   geom_vline(data = data.frame(death = date_death),
              aes(xintercept = death + 0.5),
              color = "#F13963", lwd = 1.5, alpha = .5) +
   scale_x_date(date_labels = "%d %b %Y") +
-  rotate_x +
   labs(y = "Number of cases",
        title = "Epicurve simulated from CFR, by date of onset")
 
 plot(sim_i) %>%
   add_projections(cumulate(proj)) +
   theme_bw() +
-  large_txt +
   geom_vline(data = data.frame(death = date_death),
              aes(xintercept = death + 0.5),
              color = "#F13963", lwd = 1.5, alpha = .5) +
   scale_x_date(date_labels = "%d %b %Y") +
-  rotate_x +
   labs(y = "Total number of cases",
        title = "Cumulative epicurve simulated from CFR, by date of onset")
 
@@ -352,12 +346,12 @@ Reduce(c, sim_onset) %>%
   plot() %>%
   add_projections(proj) +
   theme_bw() +
-  large_txt +
+  
   geom_vline(data = data.frame(death = date_death),
              aes(xintercept = death + 0.5),
              color = "#F13963", lwd = 1.5, alpha = .5) +
   scale_x_date(date_labels = "%d %b %Y") +
-  rotate_x +
+   
   labs(y = "Number of cases",
        title = "Epicurve simulated from CFR, by date of onset")
 
@@ -366,12 +360,12 @@ Reduce(c, sim_onset) %>%
   plot() %>%
   add_projections(cumulate(proj)) +
   theme_bw() +
-  large_txt +
+  
   geom_vline(data = data.frame(death = date_death),
              aes(xintercept = death + 0.5),
              color = "#F13963", lwd = 1.5, alpha = .5) +
   scale_x_date(date_labels = "%d %b %Y") +
-  rotate_x +
+   
   labs(y = "Total number of cases",
        title = "Cumulative epicurve simulated from CFR, by date of onset")
 
@@ -569,8 +563,6 @@ make_simulator <- function(serial_interval,
                       ribbon_alpha = .75,
                       ribbon_quantiles = c(0.25, .75)) +
       theme_bw() +
-      rotate_x +
-      large_txt +
       geom_vline(data = data.frame(death = date_death),
                  aes(xintercept = death),
                  color = "#F13963", lwd = 1.5, alpha = .5) +
@@ -590,8 +582,6 @@ make_simulator <- function(serial_interval,
                       ribbon_alpha = .75,
                       ribbon_quantiles = c(0.25, .75)) +
       theme_bw() +
-      rotate_x +
-      large_txt +
       geom_vline(data = data.frame(death = date_death),
                  aes(xintercept = death),
                  color = "#F13963", lwd = 1.5, alpha = .5) +
