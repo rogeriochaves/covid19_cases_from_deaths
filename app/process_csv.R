@@ -19,14 +19,16 @@ simulate_cases <- readRDS(here("rds", "simulate_cases.rds"))
 scripts <- list.files("scripts", pattern = "projections[.]R$", full.names = TRUE)
 lapply(scripts, source)
 
-states_with_death <- casos[(casos$deaths > 0 & casos$place_type == "state"),"state"]
+# From https://data.brasil.io/dataset/covid19/_meta/list.html
+casos <- read.csv(here("caso.csv"))
+states_with_death <- casos[(casos$deaths > 0) & (casos$place_type == "state") & complete.cases(casos$deaths),"state"]
 states_with_death <- unique(states_with_death)
 
-estimates <- data.frame("RJ",0,0,0,0, stringsAsFactors=FALSE)
-names(estimates) <- c("state", "1%", "5%", "95%", "99%")
+estimates <- data.frame("RJ", "2001-01-01", 0, 0, 0, 0, stringsAsFactors=FALSE)
+names(estimates) <- c("state", "date", "1%", "5%", "95%", "99%")
 
 for (state in states_with_death) {
-  casos <- read.csv(here("caso.csv"))
+  print(paste(c("Simulating ", state)))
   deaths_state <- casos[(casos$state == state & casos$deaths > 0 & casos$place_type == "state"),]
   deaths_state <- deaths_state[order(deaths_state[,1]),]
   
@@ -53,11 +55,14 @@ for (state in states_with_death) {
   
   projections <- result$projections
   projections_df <- as.data.frame(projections)
-  last_row <- projections_df[nrow(projections_df) - 1,]
-  x <- unlist(tail(as.list(last_row), -1))
   
-  quantiles <- quantile(x, probs = c(0.01, 0.05, 0.95, 0.99))
-  estimates[nrow(estimates) + 1,] = c(state, quantiles[1], quantiles[2], quantiles[3], quantiles[4])
+  for (i in 1:nrow(projections_df)) {
+    row <- projections_df[i,]
+    simulations <- as.numeric(tail(as.list(row), -1))
+    quantiles <- quantile(simulations, probs = c(0.01, 0.05, 0.95, 0.99))
+    date <- paste(row$dates)
+    estimates[nrow(estimates) + 1,] <- c(state, date, quantiles)
+  }
 }
 
 estimates = estimates[-1,]
