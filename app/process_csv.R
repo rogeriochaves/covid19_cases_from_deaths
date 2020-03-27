@@ -29,12 +29,13 @@ names(estimates) <- c("state", "date", "1%", "5%", "95%", "99%")
 
 for (state in states_with_death) {
   print(paste(c("Simulating ", state)))
-  deaths_state <- casos[(casos$state == state & casos$deaths > 0 & casos$place_type == "state"),]
+  deaths_state <- casos[(casos$state == state & casos$deaths > 0 & casos$place_type == "state" & complete.cases(casos$deaths)),]
   deaths_state <- deaths_state[order(deaths_state[,1]),]
   
   dates <- c()
   total_deaths <- 0
   for (i in 1:nrow(deaths_state)) {
+    deaths_state
     new_deaths <- deaths_state[i, "deaths"] - total_deaths
     total_deaths <- total_deaths + new_deaths
     date_deaths <- rep(paste(deaths_state[i, "date"]), new_deaths)
